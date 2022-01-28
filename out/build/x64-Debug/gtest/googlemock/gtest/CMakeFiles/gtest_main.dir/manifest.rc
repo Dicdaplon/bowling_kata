@@ -1,0 +1,2 @@
+#pragma code_page(65001)
+2 /* CREATEPROCESS_MANIFEST_RESOURCE_ID */ 24 /* RT_MANIFEST */ "E:/VisualStudio/bowling_kata/out/build/x64-Debug/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/embed.manifest"
