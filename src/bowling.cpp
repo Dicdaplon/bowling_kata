@@ -2,6 +2,100 @@
 #include <vector>
 using namespace std;
 #include <iostream>
+#include <cstring>
+
+
+Player::Player()
+{
+    vector<char> rollsinput;
+    bool Legal;
+    do {
+        Legal = true;
+        rollsinput = RollsInput();
+        setrolls(rollsinput);
+        if (RollsLegalityCheck(rolls)==true)
+        {
+            computescore();
+        }
+        else
+        {
+            Legal = false;
+            cout << "\n Illegals rolls ! \n Please start again : \n";
+
+        }
+    } while (Legal==false);
+
+}
+
+Player::Player(vector<char> rollsinput)
+{
+    bool Legal;
+
+        setrolls(rollsinput);
+        if (RollsLegalityCheck(rolls))
+        {
+            computescore();
+        }
+        else
+        {
+            cout << "\n Illegals rolls !";
+        }
+
+       
+}
+
+void Player::setrolls(vector<char> rollsInput)
+{
+    rolls = RollsToNumbers(rollsInput);
+}
+
+void Player::computescore(void)
+{
+    score = 0;
+    frames = FramesScore(rolls);
+    for (int i = 0; i < frames.size(); i++)
+    {
+        score += frames[i];
+    }
+}
+
+void Player::seerolls()
+{
+    cout << "\n";
+    cout << "Rolls du joueur N  :" << endl;
+    for (int i = 0; i < rolls.size(); i++)
+    {
+        cout << "  " << rolls[i];
+    }
+}
+
+void Player::seeframe()
+{
+    cout << "\n";
+    cout << "Frame du joueur N  :" << endl;
+    for (int i = 0; i < frames.size(); i++)
+    {
+        cout <<"  " << frames[i];
+    }
+}
+
+
+void Player::seescore()
+{
+    cout << " \n Score = " << score << endl;
+}
+
+void Player::seeall()
+{
+    seerolls();
+    seeframe();
+    seescore();
+}
+
+int Player::getscore()
+{
+    return score;
+}
 
 vector<char> RollsInput(void) // ask for rolls 
 {
@@ -9,7 +103,7 @@ vector<char> RollsInput(void) // ask for rolls
     char Rollinput;
     for (int i = 0; i < 20; i++)
     {
-        cout << "Results for rolls number " << (i + 1) << " enter . y . to end your game " << endl;
+        cout << "Results for rolls number " <<(i + 1) << " enter . y . to end your game " << endl;
         cin >> Rollinput;
         if (Rollinput == 'y')
         {
@@ -60,11 +154,11 @@ vector<int> RollsToNumbers(vector<char> RollsChar) // convert char vector of sym
 
 bool RollsLegalityCheck(vector<int> Rolls) // Legality check of the rolls, numbers but i want to add better check, for example as first rolls : 4 and 8 isn't possible.
 {
-    if (Rolls.size() > 20)
+    if ((Rolls.size() < 21) && (Rolls.size() > 9))
     {
-        return false;
+        return true;
     }
-    else { return true; }
+    else { return false; }
     
 }
 
