@@ -4,18 +4,20 @@
 #include <cstring>
 using namespace std;
 
-// Note to myself : Need to transform this basic functions as an object as Class Player {Name,Rolls,Frame,Score and methods)
+
 class Player {
 	public:
 
-		Player(vector<char>);
-		Player::Player();
-		void setrolls(vector<char>);
+		Player(vector<char>); // directly enter the rolls
+		Player::Player(); // call the input() function to ask rolls to the user
+		void setrolls(vector<char>); // assign rolls from input
 		void computescore();
+
 		void seerolls();
 		void seeframe();
 		void seescore();
 		void seeall();
+
 		int getscore();
 	private:
 		vector<int> rolls;
@@ -26,9 +28,9 @@ class Player {
 };
 
 
-vector<char> RollsInput(void);
-vector<int> RollsToNumbers(vector<char> Rollschar); // convert char vector of symbols "X", "/", "-", "4" char... to an int vector.
-bool RollsLegalityCheck(vector<int> Rolls); // check 
+vector<char> RollsInput(void); //ask user for rolls
+vector<int> RollsToNumbers(vector<char> Rollschar); //convert char rolls to int vector
+bool RollsLegalityCheck(vector<int> Rolls);  //check and deal with bad rolls.
 vector<int> FramesScore(vector<int> Rolls);
 
 #endif

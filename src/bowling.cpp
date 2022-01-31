@@ -27,6 +27,7 @@ Player::Player()
 
 }
 
+
 Player::Player(vector<char> rollsinput)
 {
     bool Legal;
@@ -62,7 +63,7 @@ void Player::computescore(void)
 void Player::seerolls()
 {
     cout << "\n";
-    cout << "Rolls du joueur N  :" << endl;
+    cout << "Rolls of the player  :" << endl;
     for (int i = 0; i < rolls.size(); i++)
     {
         cout << "  " << rolls[i];
@@ -72,13 +73,12 @@ void Player::seerolls()
 void Player::seeframe()
 {
     cout << "\n";
-    cout << "Frame du joueur N  :" << endl;
+    cout << "Frames :" << endl;
     for (int i = 0; i < frames.size(); i++)
     {
         cout <<"  " << frames[i];
     }
 }
-
 
 void Player::seescore()
 {
@@ -97,15 +97,19 @@ int Player::getscore()
     return score;
 }
 
+
+
+
 vector<char> RollsInput(void) // ask for rolls 
 {
     vector<char> Rolls;
     char Rollinput;
     for (int i = 0; i < 20; i++)
     {
-        cout << "Results for rolls number " <<(i + 1) << " enter . y . to end your game " << endl;
+        cout << "Results for rolls number " <<(i + 1) << " or all your rolls at once, " << " enter . y . to end your game " << endl;
         cin >> Rollinput;
-        if (Rollinput == 'y')
+
+        if(Rollinput == ('y'))
         {
             break;
         }
@@ -123,7 +127,7 @@ vector<int> RollsToNumbers(vector<char> RollsChar) // convert char vector of sym
     for (int i = 0; i < RollsChar.size(); i++)
     {
 
-        if (RollsChar[i] == 'X')
+        if (RollsChar[i] == 'X' || RollsChar[i] == 'x')
         {
             Rolls.push_back(10);
         }
@@ -152,38 +156,66 @@ vector<int> RollsToNumbers(vector<char> RollsChar) // convert char vector of sym
     return Rolls;
 }
 
-bool RollsLegalityCheck(vector<int> Rolls) // Legality check of the rolls, numbers but i want to add better check, for example as first rolls : 4 and 8 isn't possible.
+bool RollsLegalityCheck(vector<int> Rolls) // Legality check of the rolls (size and bad input)
 {
+    for (int i = 0; i < Rolls.size(); i++)
+    {
+        if (Rolls[i] == 404)
+        {
+            cout << "404 found" << endl;
+            return false;
+        }
+        else
+        { }
+    }
+    
     if ((Rolls.size() < 21) && (Rolls.size() > 9))
     {
         return true;
     }
     else { return false; }
-    
+
 }
 
 vector<int> FramesScore(vector<int> Rolls)
 {
-    int n = 0;
     vector<int> Frames;
-    for (int i = 0; i < Rolls.size()-2; i++)
+    if (RollsLegalityCheck(Rolls) == true)
     {
-        if (Rolls[i] == 10)
+        for (int i = 0; i < Rolls.size() - 1; i++)
         {
-            Frames.push_back(   10 + Rolls[i + 1] + Rolls[i + 2] );
-        }
-        else if ((Rolls[i] + Rolls[i + 1]) == 10)
-        {
-            Frames.push_back( 10 + Rolls[i + 2] );
-            i++;
-        }
-        else
-        {
-            Frames.push_back( Rolls[i] + Rolls[i + 1] );
-            i++;
-        }
-    }
 
-    return Frames;
+            if (Rolls[i] == 10)
+            {
+                Frames.push_back(10 + Rolls[i + 1] + Rolls[i + 2]);
+            }
+            else if ((Rolls[i] + Rolls[i + 1]) == 10)
+            {
+
+                Frames.push_back(10 + Rolls[i + 2]);
+                i++;
+            }
+            else
+            {
+                Frames.push_back(Rolls[i] + Rolls[i + 1]);
+                i++;
+            }
+            if (Frames.size() == 10)
+            {
+                break;
+            }
+            else {}
+
+
+
+        }
+        return Frames;
+    }
+    else
+    {
+        cout << "Format Error !" << endl;
+        Frames.push_back(0);
+        return Frames;
+    }
 
 }

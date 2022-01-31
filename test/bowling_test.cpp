@@ -5,10 +5,13 @@
 #include <cstring>
 using namespace std;
 
+//Function was wrote separetely to ease TDD approach and called in methods inside a class "Player" (if the code evolve and need to handle multiple players...)
 
 
+// TEST SET
 
-TEST(Bowling, RollsConvertToNumbers) //My first test in to convert character and symbols entry to a vector for number, dealing with Strike "X", Spare "/", or miss "-"
+// Input, case handle, user side test.
+TEST(BowlingInputError, RollsConvertToNumbers) //Convert character and symbols entry to a vector for number, dealing with Strike "X", Spare "/", or miss "-"
 {
     vector<char> test = { 'X','4','1','3','1','4','/','4' };
     vector<int> predict = RollsToNumbers(test); //The result i get
@@ -20,11 +23,21 @@ TEST(Bowling, RollsConvertToNumbers) //My first test in to convert character and
         EXPECT_EQ(predict[i], groundtruth[i]) << "error at case " << i << ", input = " << test[i] << " is convert to " << predict[i] << " and Should be " << groundtruth[i];
     }
 
+    test = { 'x','4','1','3','1','4','/','4' }; //minor handle
+    predict = RollsToNumbers(test); //The result i get
+    groundtruth = { 10,4,1,3,1,4,6,4 }; // The result i expect
+
+    for (int i = 0; i < test.size(); i++)
+    {
+
+        EXPECT_EQ(predict[i], groundtruth[i]) << "error at case " << i << ", input = " << test[i] << " is convert to " << predict[i] << " and Should be " << groundtruth[i];
+    }
+
     
 }
 
 
-TEST(Bowling, RollsFormatErrorDetection) //Dealing with format error, getting a "404" for bad value, and an error message.
+TEST(BowlingInputError, RollsFormatErrorDetection) //Dealing with format error, getting a "404" for bad value, and an error message.
 {
     vector<char> test = { 'X','F','1','3','1','4','/','4' };
     vector<int> predict = RollsToNumbers(test); //The result i get
@@ -36,31 +49,27 @@ TEST(Bowling, RollsFormatErrorDetection) //Dealing with format error, getting a 
 
 }  
 
-TEST(Bowling, RollsLenghtErrorDetection) //checking the legality of consistancy of Rolls number (max 20, vector is the same size than the entry)
+
+TEST(BowlingInputError, RollsLegalityCheckTrue) //checking the legality of consistancy of Rolls number (between ]10, 20[  and input)
 {
-    vector<char> test = { 'X','4','1','3','1','4','/','4' };
-    vector<int> predict = RollsToNumbers(test); //The result i get
-    vector<int> groundtruth = { 10,4,1,3,1,4,6,4 }; // The result i expect
-
-
-
-    ASSERT_TRUE(test.size()==groundtruth.size() && test.size()<20);   //note to myself : i may create a separate function to check the roll legality.
+    vector<int> GoodRolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 4,6, 4};
+    ASSERT_TRUE(RollsLegalityCheck(GoodRolls)) << "A good rolls is identified as illegal...";
 }
 
-TEST(Bowling, RollsLegalityCheckTrue) //checking the legality of consistancy of Rolls number (max 20, vector is the same size than the entry)
+TEST(BowlingInputError, RollsLegalityCheckFalse)  //check that we can detect wrong rolls (can be improved)
 {
-    vector<int> GoodRolls = { 10, 4,1, 3,1, 4,6, 4, 10, 10, 5,4, 6,3, 10, 1, 2 };
-    ASSERT_TRUE(RollsLegalityCheck(GoodRolls)) << "Identify a good rolls array as illegal";
-}
+    vector<int> BadRolls = { 10, 4,1, 3,1, 4 };  //too short
+    ASSERT_FALSE(RollsLegalityCheck(BadRolls)) << "A bad rolls (too short) is identified as legal...";
 
-TEST(Bowling, RollsLegalityCheckFalse) 
-{
-    vector<int> GoodRolls = { 10, 4,1, 3,1, 4,6, 4, 10, 10, 5,4, 6,3, 10, 1, 2, 4, 3, 4 ,2 };
-    ASSERT_FALSE(RollsLegalityCheck(GoodRolls)) << "Identify an illegal rolls array as legal";
+    BadRolls = { 10, 4,1, 3,1, 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 4,6, 4 }; //too long
+    ASSERT_FALSE(RollsLegalityCheck(BadRolls)) << "A bad rolls (too short) is identified as legal...";
 
 }
 
-/*TEST(Bowling, FramesScoreCalculator)
+
+// Score calculation test.
+
+TEST(BowlingScoreCalculator, FramesScoreCalculator)  // Frames score calculator
 {
 
     vector<char> test = { '3','2','X','3','4','X','4','/','4','/','7','2','1','0','1','2','3','5' };
@@ -69,15 +78,14 @@ TEST(Bowling, RollsLegalityCheckFalse)
 
     for (int i = 0; i < groundtruth.size(); i++)
     {
-
         EXPECT_EQ(predict[i], groundtruth[i]) << "error at case " << i << ", predict = " << predict[i] <<  "and Should be " << groundtruth[i];
     }
 
 
 }
-*/
 
-TEST(Bowling, VariousScoreCalculation)
+
+TEST(BowlingScoreCalculator, VariousScoreCalculation)  //a LOT of score verification in different situations.
 {
     vector<char> rollstest ;
     int groundtruth ; //final score we should get
@@ -111,9 +119,29 @@ TEST(Bowling, VariousScoreCalculation)
     groundtruth = 101;
     predict = Players[3].getscore();
     EXPECT_EQ(predict, groundtruth) << "Wrong score calculation, should get" << groundtruth << " but give" << predict << endl;
+
+    rollstest = { '2','6','X','3','/','4','2','7','/','X','6','3','X','X','5','3' };
+    Players.push_back(rollstest);
+    groundtruth = 147;
+    predict = Players[4].getscore();
+    EXPECT_EQ(predict, groundtruth) << "Wrong score calculation, should get" << groundtruth << " but give" << predict << endl;
+
+    rollstest = { '2','6','X','3','/','4','2','7','/','X','6','3','X','3','4', 'X','4','/'};
+    Players.push_back(rollstest);
+    groundtruth = 140;
+    predict = Players[5].getscore();
+    EXPECT_EQ(predict, groundtruth) << "Wrong score calculation, should get" << groundtruth << " but give" << predict << endl;
+
+    rollstest = { '2','6','X','3','/','4','2','7','/','X','6','3','X','X','4','6','4' };
+    Players.push_back(rollstest);
+    groundtruth = 154;
+    predict = Players[6].getscore();
+    EXPECT_EQ(predict, groundtruth) << "Wrong score calculation, should get" << groundtruth << " but give" << predict << endl;
 }
 
-TEST(Bowling, RollsInput) //Asking rolls of the player
+
+// Direct Input test, need user to be tested, feel free to comment to this test when working on the code.
+TEST(BowlingInputTest, RollsInput) //Asking rolls of the player
 {
     cout << "to test this part, \n please enter a bad sequence (unknown symbols, inferior to 9 or superior to 20), \n and right after a good sequence" << endl;
     Player Bob;
