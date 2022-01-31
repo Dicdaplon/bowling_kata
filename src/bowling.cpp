@@ -106,7 +106,8 @@ vector<char> RollsInput(void) // ask for rolls
     char Rollinput;
     for (int i = 0; i < 20; i++)
     {
-        cout << "Results for rolls number " <<(i + 1) << " or all your rolls at once, " << " enter . y . to end your game " << endl;
+        cout << "\n Please enter results for rolls number " <<(i + 1) << " or all your rolls at once, " << " enter . y . to end your game " << endl;
+        cout << "accepted : Strike -> X, Spare -> /, or numbers :" << endl;
         cin >> Rollinput;
 
         if(Rollinput == ('y'))
@@ -158,22 +159,60 @@ vector<int> RollsToNumbers(vector<char> RollsChar) // convert char vector of sym
 
 bool RollsLegalityCheck(vector<int> Rolls) // Legality check of the rolls (size and bad input)
 {
-    for (int i = 0; i < Rolls.size(); i++)
+    for (int i = 0; i < Rolls.size(); i++)   //check the bad entry, as unknown characters
     {
         if (Rolls[i] == 404)
         {
-            cout << "404 found" << endl;
             return false;
         }
         else
         { }
     }
+
+    int FrameNumber = 0;
+    int RemainRolls;
+
+    /* This part turn in spaghetti and don't work properly, need an entire rewrite*/
+    /*
+    for (int i= 0; i< Rolls.size(); i++ )
+    {
+
+        RemainRolls = Rolls.size() - (i + 1) ;
+        if (FrameNumber == 9 && RemainRolls!=2 && Rolls[i] == 10)  //check that after 10th frame : Strike get 2 extra rolls, spare get 1 Extra Rolls. 
+        {
+            cout << "Bad ending sequence after strike on 10th frame" << endl;
+            return false;
+
+        }
+        else if ( (FrameNumber == 9) && (RemainRolls != 2) && (  (Rolls[i] + Rolls[i+1]) == 10)) 
+        {
+            cout << "Bad ending sequence after spare on 10th frame" << endl;
+            return false;
+
+        }
+        else if (Rolls[i] == 10) { FrameNumber++; }
+        else if (Rolls[i] == 10 && FrameNumber == 9) { FrameNumber++;  FrameNumber++;}
+        else if (Rolls[i] != 10 && FrameNumber == 9) { FrameNumber++; }
+        else 
+        {
+            FrameNumber++;
+            i++;
+        }
+    }
+    cout << " check 10 " << FrameNumber << endl;
+    if (FrameNumber == 11) {}  //check there is 10 frame
+    else { return false; }
+
+    */
     
-    if ((Rolls.size() < 21) && (Rolls.size() > 9))
+    if ((Rolls.size() < 21) && (Rolls.size() > 9)) //check rolls legality
     {
         return true;
     }
     else { return false; }
+
+
+    //an update can be to check the following number that is impossible -> 6 and 8 on the same frame.
 
 }
 

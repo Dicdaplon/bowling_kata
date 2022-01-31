@@ -53,7 +53,13 @@ TEST(BowlingInputError, RollsFormatErrorDetection) //Dealing with format error, 
 TEST(BowlingInputError, RollsLegalityCheckTrue) //checking the legality of consistancy of Rolls number (between ]10, 20[  and input)
 {
     vector<int> GoodRolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 4,6, 4};
-    ASSERT_TRUE(RollsLegalityCheck(GoodRolls)) << "A good rolls is identified as illegal...";
+    ASSERT_TRUE(RollsLegalityCheck(GoodRolls)) << "1.A good rolls is identified as illegal...";
+
+    GoodRolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 'X', 4, 6};
+    ASSERT_TRUE(RollsLegalityCheck(GoodRolls)) << "2.A good rolls is identified as illegal...";
+
+    GoodRolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 1,2 };
+    ASSERT_TRUE(RollsLegalityCheck(GoodRolls)) << "3 good rolls is identified as illegal...";
 }
 
 TEST(BowlingInputError, RollsLegalityCheckFalse)  //check that we can detect wrong rolls (can be improved)
@@ -64,6 +70,20 @@ TEST(BowlingInputError, RollsLegalityCheckFalse)  //check that we can detect wro
     BadRolls = { 10, 4,1, 3,1, 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 4,6, 4 }; //too long
     ASSERT_FALSE(RollsLegalityCheck(BadRolls)) << "A bad rolls (too short) is identified as legal...";
 
+
+
+    BadRolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 10, 4 }; //only one roll after strike at 10th frame
+    ASSERT_FALSE(RollsLegalityCheck(BadRolls)) << "don't detect illegal set of rolls after strikes at 10th";
+
+    BadRolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 10 }; //no roll after strike at 10th frame
+    ASSERT_FALSE(RollsLegalityCheck(BadRolls)) << "don't detect illegal set of rolls after strikes at 10th";
+
+    BadRolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 6,4 };  //no rolls after spare at 10th frame
+    ASSERT_FALSE(RollsLegalityCheck(BadRolls)) << "don't detect illegal set, no rolls after Spare at 10th";
+
+    BadRolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 6,4 ,1,2};  //2 rolls after spare at 10th frame
+    ASSERT_FALSE(RollsLegalityCheck(BadRolls)) << "don't detect illegal set of rolls after Spare at 10th";
+
 }
 
 
@@ -72,7 +92,7 @@ TEST(BowlingInputError, RollsLegalityCheckFalse)  //check that we can detect wro
 TEST(BowlingScoreCalculator, FramesScoreCalculator)  // Frames score calculator
 {
 
-    vector<char> test = { '3','2','X','3','4','X','4','/','4','/','7','2','1','0','1','2','3','5' };
+    vector<char> test = { '3','2', 'X', '3','4', 'X', '4','/', '4','/', '7','2', '1','0', '1','2', '3','5' };
     vector<int> predict = FramesScore(RollsToNumbers(test)); //The result i get
     vector<int> groundtruth = { 5,17,7,20,14,17,9,1,3,8 }; // The result i expect
 
@@ -143,7 +163,7 @@ TEST(BowlingScoreCalculator, VariousScoreCalculation)  //a LOT of score verifica
 // Direct Input test, need user to be tested, feel free to comment to this test when working on the code.
 TEST(BowlingInputTest, RollsInput) //Asking rolls of the player
 {
-    cout << "to test this part, \n please enter a bad sequence (unknown symbols, inferior to 9 or superior to 20), \n and right after a good sequence" << endl;
+    cout << "\nTo test this part, \n please enter a bad sequence (unknown symbols, inferior to 9 or superior to 20), \nand right after a good sequence" << endl;
     Player Bob;
     Bob.getscore();
     Bob.seeall();
