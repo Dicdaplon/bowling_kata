@@ -9,7 +9,7 @@ class Player {
 	public:
 
 		Player(vector<char>); // directly enter the rolls
-		Player::Player(); // call the input() function to ask rolls to the user
+		Player(); // call the input() function to ask rolls to the user
 		void setrolls(vector<char>); // assign rolls from input
 		void computescore();
 
