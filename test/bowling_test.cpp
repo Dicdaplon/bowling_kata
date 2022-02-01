@@ -10,6 +10,37 @@ using namespace std;
 
 // TEST SET
 
+TEST(SuggestedTestCases, TestCases) //Convert character and symbols entry to a vector for number, dealing with Strike "X", Spare "/", or miss "-"
+{
+    vector<char> rollstest;
+    vector<Player> Players;
+    int groundtruth;
+    int predict;
+
+    
+    rollstest = { 'X', 'X', 'X', 'X', 'X', 'X', 'X' , 'X', 'X', 'X', 'X', 'X' };
+    Players.push_back(rollstest);
+    groundtruth = 300;
+    predict = Players[0].getscore();
+    EXPECT_EQ(predict, groundtruth) << "Wrong score calculation, should get" << groundtruth << " but give" << predict << endl;
+
+
+    rollstest = { '5','/',  '5','/',  '5', '/',  '5', '/',   '5', '/',   '5', '/',   '5', '/',   '5','/',  '5','/',  '5','/',   '5' };
+    Players.push_back(rollstest);
+    groundtruth = 150;
+    predict = Players[1].getscore();
+    EXPECT_EQ(predict, groundtruth) << "Wrong score calculation, should get" << groundtruth << " but give" << predict << endl;
+
+
+    rollstest = { '9','-',  '9','-',   '9','-',   '9','-',  '9','-',  '9','-' , '9','-',  '9','-',  '9','-',  '9','-' };
+    Players.push_back(rollstest);
+    groundtruth =90;
+    predict = Players[2].getscore();
+    EXPECT_EQ(predict, groundtruth) << "Wrong score calculation, should get" << groundtruth << " but give" << predict << endl;
+
+
+}
+
 // Input, case handle, user side test.
 TEST(BowlingInputError, RollsConvertToNumbers) //Convert character and symbols entry to a vector for number, dealing with Strike "X", Spare "/", or miss "-"
 {
@@ -26,6 +57,17 @@ TEST(BowlingInputError, RollsConvertToNumbers) //Convert character and symbols e
     test = { 'x','4','1','3','1','4','/','4' }; //minor handle
     predict = RollsToNumbers(test); //The result i get
     groundtruth = { 10,4,1,3,1,4,6,4 }; // The result i expect
+
+    for (int i = 0; i < test.size(); i++)
+    {
+
+        EXPECT_EQ(predict[i], groundtruth[i]) << "error at case " << i << ", input = " << test[i] << " is convert to " << predict[i] << " and Should be " << groundtruth[i];
+    }
+
+
+    test = { '5','/','5','/', '5', '/', '5', '/', '5', '/', '5', '/', '5', '/','5','/','5','/','5','/','5' };
+    predict = RollsToNumbers(test); //The result i get
+    groundtruth = { 5,5, 5,5, 5,5, 5,5, 5,5 ,5,5 ,5,5 ,5,5 ,5,5, 5,5 , 5 }; // The result i expect
 
     for (int i = 0; i < test.size(); i++)
     {
@@ -50,20 +92,64 @@ TEST(BowlingInputError, RollsFormatErrorDetection) //Dealing with format error, 
 }  
 
 
-TEST(BowlingInputError, RollsLegalityCheckTrue) //checking the legality of consistancy of Rolls number (between ]10, 20[  and input)
+TEST(BowlingInputError, LastFrameCalculator)  //check that we can detect wrong rolls (can be improved)
 {
-    vector<int> GoodRolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 4,6, 4};
-    ASSERT_TRUE(RollsLegalityCheck(GoodRolls)) << "1.A good rolls is identified as illegal...";
+    vector<int> Rolls;
+    int predict;
+    int groundtruth;
 
-    GoodRolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 'X', 4, 6};
-    ASSERT_TRUE(RollsLegalityCheck(GoodRolls)) << "2.A good rolls is identified as illegal...";
 
-    GoodRolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 1,2 };
-    ASSERT_TRUE(RollsLegalityCheck(GoodRolls)) << "3 good rolls is identified as illegal...";
+    Rolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 10,    4,6 }; //only one roll after strike at 10th frame
+    ASSERT_TRUE(LastFrameCalculator(Rolls)) << "Strike with 2 extra strike detected as bad";
+
+    Rolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 10,    4 }; //only one roll after strike at 10th frame
+    ASSERT_FALSE(LastFrameCalculator(Rolls)) << "Strike with 1 extra strike detected as good";
+
+
+    Rolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 10 }; //only one roll after strike at 10th frame
+    ASSERT_FALSE(LastFrameCalculator(Rolls)) << "Strike with 0 extra strike detected as good";
+
+
+
+    Rolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 6,4,    1 }; //only one roll after strike at 10th frame
+    ASSERT_TRUE(LastFrameCalculator(Rolls)) << "Spare with 1 extra strike detected as bad";
+
+    Rolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 6,4,    1,4 }; //only one roll after strike at 10th frame
+    ASSERT_FALSE(LastFrameCalculator(Rolls)) << "Spare with 2 extra strike detected as good";
+
+
+    Rolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 1,3 }; //only one roll after strike at 10th frame
+    ASSERT_TRUE(LastFrameCalculator(Rolls)) << "No extra rolls considered as bad";
+
+    Rolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 1,3,   4,6 }; //only one roll after strike at 10th frame
+    ASSERT_FALSE(LastFrameCalculator(Rolls)) << "Illegal extra rolls considered as good";
+
+
+
+    Rolls ={ 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 };
+    ASSERT_TRUE(LastFrameCalculator(Rolls)) << "Good rolls ending with spare is considered illegal";
+
+    
+
 }
 
-TEST(BowlingInputError, RollsLegalityCheckFalse)  //check that we can detect wrong rolls (can be improved)
+TEST(BowlingInputError, RollsLegalityCheckTrue) //checking the legality of consistancy of Rolls number (between ]10, 20[  and input)
 {
+   
+    vector<int> GoodRolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 4,6, 4};
+    ASSERT_TRUE(RollsLegalityCheck(GoodRolls)) << "Good rolls ending with spare identified as illegal";
+
+    GoodRolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 10, 4, 6};
+    ASSERT_TRUE(RollsLegalityCheck(GoodRolls)) << "Good rolls ending with strike identified as illegal";
+
+    GoodRolls = { 10, 4,1, 3,1, 4,6, 10, 10, 4,2 ,3,6, 8,1, 1,2 };
+    ASSERT_TRUE(RollsLegalityCheck(GoodRolls)) << "Good rolls identified as illegal";
+}
+
+TEST(BowlingInputError, RollsLegalityCheckFalse)  
+{
+
+
     vector<int> BadRolls = { 10, 4,1, 3,1, 4 };  //too short
     ASSERT_FALSE(RollsLegalityCheck(BadRolls)) << "A bad rolls (too short) is identified as legal...";
 

@@ -30,6 +30,7 @@ class Player {
 
 vector<char> RollsInput(void); //ask user for rolls
 vector<int> RollsToNumbers(vector<char> Rollschar); //convert char rolls to int vector
+bool LastFrameCalculator(vector<int> Rolls);
 bool RollsLegalityCheck(vector<int> Rolls);  //check and deal with bad rolls.
 vector<int> FramesScore(vector<int> Rolls);
 

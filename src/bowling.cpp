@@ -73,7 +73,7 @@ void Player::seerolls()
 void Player::seeframe()
 {
     cout << "\n";
-    cout << "Frames :" << endl;
+    cout << "Score per frames :" << endl;
     for (int i = 0; i < frames.size(); i++)
     {
         cout <<"  " << frames[i];
@@ -82,7 +82,7 @@ void Player::seeframe()
 
 void Player::seescore()
 {
-    cout << " \n Score = " << score << endl;
+    cout << " \n\n     Final Score = " << score << "\n\n" << endl;
 }
 
 void Player::seeall()
@@ -104,7 +104,7 @@ vector<char> RollsInput(void) // ask for rolls
 {
     vector<char> Rolls;
     char Rollinput;
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < 21; i++)
     {
         cout << "\n Please enter results for rolls number " <<(i + 1) << " or all your rolls at once, " << " enter . y . to end your game " << endl;
         cout << "accepted : Strike -> X, Spare -> /, or numbers :" << endl;
@@ -116,7 +116,7 @@ vector<char> RollsInput(void) // ask for rolls
         }
         else{ Rolls.push_back(Rollinput); }
     }
-
+    cout << "\n\n\n Thank you ! Computing your rolls..." << endl;
     return Rolls;
 
 } 
@@ -157,6 +157,39 @@ vector<int> RollsToNumbers(vector<char> RollsChar) // convert char vector of sym
     return Rolls;
 }
 
+bool LastFrameCalculator(vector<int> Rolls) //test the legality of the rolls after the 10th frame
+{
+    int FrameNumber =0;
+    int Roll_ten_position;
+
+    for (int i = 0; i < Rolls.size(); i++)
+    {
+        if (FrameNumber == 10) { break; }
+        else if (Rolls[i] == 10) { FrameNumber++; }
+        else { FrameNumber++;  i++; }
+
+        Roll_ten_position = i;
+    }
+
+
+    int RollsRemain = Rolls.size() - Roll_ten_position - 1;   //consider to number of rolls after the 10th and take a decision on the legality.
+
+    if (Rolls[Roll_ten_position] == 10 && RollsRemain == 2)
+    {
+        return true;
+    }
+    else if ((Rolls[Roll_ten_position] + Rolls[Roll_ten_position - 1]) == 10  && RollsRemain == 1)
+    {
+        return true;
+    }
+    else if((Rolls[Roll_ten_position] + Rolls[Roll_ten_position - 1]) < 10 && RollsRemain == 0)
+    { 
+        return true;
+    }
+    else { return false; }
+
+
+}
 bool RollsLegalityCheck(vector<int> Rolls) // Legality check of the rolls (size and bad input)
 {
     for (int i = 0; i < Rolls.size(); i++)   //check the bad entry, as unknown characters
@@ -169,48 +202,17 @@ bool RollsLegalityCheck(vector<int> Rolls) // Legality check of the rolls (size 
         { }
     }
 
-    int FrameNumber = 0;
-    int RemainRolls;
-
-    /* This part turn in spaghetti and don't work properly, need an entire rewrite*/
-    /*
-    for (int i= 0; i< Rolls.size(); i++ )
+    if ((Rolls.size() < 22) && (Rolls.size() > 9)) //check rolls legality
     {
-
-        RemainRolls = Rolls.size() - (i + 1) ;
-        if (FrameNumber == 9 && RemainRolls!=2 && Rolls[i] == 10)  //check that after 10th frame : Strike get 2 extra rolls, spare get 1 Extra Rolls. 
-        {
-            cout << "Bad ending sequence after strike on 10th frame" << endl;
-            return false;
-
-        }
-        else if ( (FrameNumber == 9) && (RemainRolls != 2) && (  (Rolls[i] + Rolls[i+1]) == 10)) 
-        {
-            cout << "Bad ending sequence after spare on 10th frame" << endl;
-            return false;
-
-        }
-        else if (Rolls[i] == 10) { FrameNumber++; }
-        else if (Rolls[i] == 10 && FrameNumber == 9) { FrameNumber++;  FrameNumber++;}
-        else if (Rolls[i] != 10 && FrameNumber == 9) { FrameNumber++; }
-        else 
-        {
-            FrameNumber++;
-            i++;
-        }
+        ;
     }
-    cout << " check 10 " << FrameNumber << endl;
-    if (FrameNumber == 11) {}  //check there is 10 frame
+    else {return false; }
+
+
+    if (LastFrameCalculator(Rolls) == true) { return true; } // test the legality of the rolls after the 10th frame
     else { return false; }
 
-    */
-    
-    if ((Rolls.size() < 21) && (Rolls.size() > 9)) //check rolls legality
-    {
-        return true;
-    }
-    else { return false; }
-
+   
 
     //an update can be to check the following number that is impossible -> 6 and 8 on the same frame.
 
